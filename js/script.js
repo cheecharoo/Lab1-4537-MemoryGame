@@ -1,7 +1,8 @@
 import { STRINGS } from "/lang/messages/en/user.js";
 
-// AI assistance disclosure: GitHub Copilot was used during development.
+// AI assistance disclosure: GitHub Copilot was used during development for commenting and logic validation.
 
+// Represents one numbered button and stores its original order, color, and DOM element.
 class GameSquare
 {
     constructor(id, color)
@@ -25,6 +26,7 @@ class GameSquare
     }
 }
 
+// Owns the game board UI: it creates buttons, controls their enabled state, and moves them.
 class GameBoard
 {
     constructor(element)
@@ -70,6 +72,7 @@ class GameBoard
 
     shuffle(gameSquares)
     {
+        // Read the current viewport before every shuffle so each button stays visible.
         const boardBounds = this.element.getBoundingClientRect();
         const boardWidth = Math.min(this.element.clientWidth, window.innerWidth - boardBounds.left);
         const boardHeight = Math.min(this.element.clientHeight, window.innerHeight - boardBounds.top);
@@ -86,6 +89,7 @@ class GameBoard
     }
 }
 
+// Controls the game phases: preview, timed scrambling, memory testing, and game over.
 class Game
 {
     constructor(numBoxes, board, showMessage)
@@ -103,6 +107,7 @@ class Game
 
     start()
     {
+        // Starting again cancels the old game and creates a fresh set of buttons.
         this.stop();
         this.nextId = 0;
         this.shuffleCount = 0;
@@ -156,6 +161,7 @@ class Game
 
     scrambleNext()
     {
+        // The first move happens after the n-second preview; later moves are two seconds apart.
         this.board.shuffle(this.gameSquares);
         this.shuffleCount++;
 
@@ -186,6 +192,7 @@ class Game
 
         if (square.id !== this.nextId)
         {
+            // A mistake ends the game and reveals the complete correct order.
             this.revealCorrectOrder();
             this.stop();
             this.showMessage(STRINGS.WRONG_ORDER_MESSAGE);
@@ -197,6 +204,7 @@ class Game
 
         if (this.nextId === this.numBoxes)
         {
+            // Every button was selected in its original order.
             this.stop();
             this.showMessage(STRINGS.EXCELLENT_MEMORY_MESSAGE);
         }
@@ -217,6 +225,7 @@ class Game
     }
 }
 
+// Connects the form and messages to the game classes and starts each new game.
 class AppController
 {
     constructor()
@@ -243,6 +252,7 @@ class AppController
     {
         const inputValue = this.input.value.trim();
 
+        // Only whole numbers from 3 through 7 are valid game sizes.
         if (!/^([3-7])$/.test(inputValue))
         {
             this.message.textContent = STRINGS.INVALID_INPUT_MESSAGE;
